@@ -1,4 +1,4 @@
-FROM node:7.2-slim
+FROM node:7.5-slim
 # Create app directory
 RUN mkdir -p /usr/generaptr
 WORKDIR /usr/generaptr
@@ -13,4 +13,4 @@ COPY . /usr/generaptr
 
 RUN npm install
 
-CMD [ "npm", "run", "-s", "start"]
+CMD [ "npm", "run", "-s", "start:dev"]

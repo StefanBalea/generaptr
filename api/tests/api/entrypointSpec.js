@@ -1,6 +1,6 @@
 const request = require("supertest");
 const should = require("should");
-const app = require('../../src/server.js');
+const app = require('.././server.js');
 // This agent refers to PORT where program is running.
 
 

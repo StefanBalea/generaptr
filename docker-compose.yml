@@ -1,0 +1,59 @@
+version: '2'
+services:
+  traefik:
+    image: traefik
+    command: --web --docker --docker.domain=$MAIN_DOMAIN --logLevel=DEBUG
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+    networks:
+      - default
+
+  db:
+    image: mysql
+    expose:
+      - 3306
+    volumes:
+      - db:/var/lib/mysql
+    depends_on:
+      - traefik
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: generaptr
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    labels:
+      - "traefik.backend=db"
+      - "traefik.frontend.rule=Host:db.${MAIN_DOMAIN}"
+    networks:
+      - default
+
+  api:
+    build:
+      context: ./api
+    image: generaptr:api
+    depends_on:
+      - traefik
+      - db
+    expose:
+      - 80
+    networks:
+      - default
+    volumes:
+      - ./api:/usr/generaptr
+    labels:
+      - "traefik.backend=api"
+      - "traefik.frontend.rule=Host:api.${MAIN_DOMAIN}"
+
+volumes:
+  storage:
+    driver: local
+  db:
+    driver: local
+networks:
+  default:
+    external:
+      name: generaptr
